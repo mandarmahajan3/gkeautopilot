@@ -95,3 +95,5 @@ POST https://container.googleapis.com/v1/projects/uhg-poc-new/locations/us-centr
 CMDLINE 
 
 gcloud beta container --project "uhg-poc-new" clusters create-auto "autopilot-cluster-1" --region "us-central1" --release-channel "regular" --enable-master-authorized-networks --master-authorized-networks 0.0.0.0/0 --network "projects/uhg-poc-new/global/networks/default" --subnetwork "projects/uhg-poc-new/regions/us-central1/subnetworks/default" --cluster-ipv4-cidr "/17" --binauthz-evaluation-mode=DISABLED
+
+

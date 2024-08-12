@@ -1,3 +1,35 @@
+# Create a random password for the CloudSQL master user
+resource "random_password" "db_password" {
+  length  = 16
+  special = true
+}
+
+# Create a secret in Google Secret Manager to store the master user password
+resource "google_secret_manager_secret" "db_password_secret" {
+  provider = google
+
+  secret_id = "${var.name_prefix}-db-password"
+  replication {
+    automatic = true
+  }
+}
+
+# Store the generated password in the secret
+resource "google_secret_manager_secret_version" "db_password_secret_version" {
+  provider = google
+
+  secret      = google_secret_manager_secret.db_password_secret.id
+  secret_data = random_password.db_password.result
+}
+
+# Retrieve the secret value from Google Secret Manager
+data "google_secret_manager_secret_version" "db_password" {
+  provider = google
+
+  secret = google_secret_manager_secret.db_password_secret.id
+  version = "latest"
+}
+
 # CREATE A RANDOM SUFFIX AND PREPARE RESOURCE NAMES
 resource "random_id" "name" {
   byte_length = 2
@@ -20,7 +52,8 @@ module "mysql" {
   engine       = var.mysql_version
   machine_type = var.machine_type
 
-  master_user_password = var.master_user_password
+  # Use the secret value as the password
+  master_user_password = data.google_secret_manager_secret_version.db_password.secret_data
 
   master_user_name = var.master_user_name
   master_user_host = "%"
