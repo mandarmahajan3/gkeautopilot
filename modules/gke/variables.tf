@@ -74,3 +74,10 @@ variable "ingress_service_port" {
   description = "The port on the service to route ingress traffic to."
   type        = number
 }
+
+# New Variables for Secret Manager Integration
+
+variable "db_password_secret_id" {
+  description = "The ID of the Google Secret Manager secret containing the database password."
+  type        = string
+}
