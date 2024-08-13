@@ -7,10 +7,10 @@ resource "kubernetes_namespace" "namespaces" {
 }
 
 resource "kubernetes_ingress" "namespace_ingress" {
-  for_each = toset(var.namespaces)
+  for_each = var.namespaces
 
   metadata {
-    name      = "${each.value}-ingress"
+    name      = "${each.key}-ingress"
     namespace = each.value
   }
 
@@ -27,6 +27,8 @@ resource "kubernetes_ingress" "namespace_ingress" {
       }
     }
   }
+  depends_on = [kubernetes_namespace.namespaces]
+
 }
 
 resource "kubernetes_network_policy" "deny_all_ingress" {
@@ -54,6 +56,8 @@ resource "kubernetes_network_policy" "deny_all_ingress" {
 
     policy_types = ["Ingress"]
   }
+
+  depends_on = [kubernetes_namespace.namespaces]
 }
 
 resource "kubernetes_network_policy" "allow_all_internal_ingress" {
@@ -85,6 +89,8 @@ resource "kubernetes_network_policy" "allow_all_internal_ingress" {
 
     policy_types = ["Ingress"]
   }
+  depends_on = [kubernetes_namespace.namespaces]
+
 }
 
 resource "kubernetes_service_account" "namespace_service_accounts" {

@@ -30,7 +30,7 @@ module "gke" {
 
 # Define the Kubernetes provider using outputs from the GKE module
 provider "kubernetes" {
-  host                   = module.gke.cluster_endpoint
+  host                   = "https://${module.gke.cluster_endpoint}"
   token                  = module.gke.access_token
   cluster_ca_certificate = base64decode(module.gke.cluster_ca_certificate)
 }
