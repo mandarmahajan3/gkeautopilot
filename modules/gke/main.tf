@@ -40,16 +40,6 @@ resource "google_container_cluster" "primary" {
     enabled = true
   }
 
-  addons_config {
-    gcp_filestore_csi_driver_config {
-      enabled = true
-    }
-
-    horizontal_pod_autoscaling {
-      disabled = true
-    }
-  }
-
   private_cluster_config {
     enable_private_nodes    = true
     enable_private_endpoint = false

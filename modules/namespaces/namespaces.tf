@@ -70,7 +70,7 @@ resource "kubernetes_network_policy" "allow_all_internal_ingress" {
     ingress {
       from {
         ip_block {
-          cidr = var.internal_cidrs
+          cidr = var.internal_cidrs[]
         }
       }
       from {
