@@ -15,11 +15,6 @@ terraform {
   }
 }
 
-provider "google" {
-  project = var.project_id
-  region  = var.region
-}
-
 module "gke" {
   source       = "../../module/GKE"
   project_id   = var.project_id
