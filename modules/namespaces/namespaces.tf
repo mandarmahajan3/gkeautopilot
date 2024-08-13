@@ -1,5 +1,10 @@
+locals {
+  namespaces_map = { for ns in var.namespaces : ns => {} }
+}
+
+
 resource "kubernetes_namespace" "namespaces" {
-  for_each = var.namespaces
+  for_each = local.namespaces_map
 
   metadata {
     name = each.value
