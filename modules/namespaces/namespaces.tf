@@ -7,7 +7,7 @@ resource "kubernetes_namespace" "namespaces" {
   for_each = local.namespaces_map
 
   metadata {
-    name = each.value
+    name = each.key
   }
 }
 
@@ -16,7 +16,7 @@ resource "kubernetes_ingress" "namespace_ingress" {
 
   metadata {
     name      = "${each.key}-ingress"
-    namespace = each.value
+    namespace = each.key
   }
 
   spec {
@@ -41,7 +41,7 @@ resource "kubernetes_network_policy" "deny_all_ingress" {
 
   metadata {
     name      = "deny-all-ingress"
-    namespace = each.value
+    namespace = each.key
   }
 
   spec {
@@ -70,7 +70,7 @@ resource "kubernetes_network_policy" "allow_all_internal_ingress" {
 
   metadata {
     name      = "allow-all-internal-ingress"
-    namespace = each.value
+    namespace = each.key
   }
 
   spec {
@@ -102,7 +102,7 @@ resource "kubernetes_service_account" "namespace_service_accounts" {
   for_each = toset(var.namespaces)
 
   metadata {
-    name      = "${each.value}-sa"
+    name      = "${each.key}-sa"
     namespace = each.value
   }
 }
