@@ -29,6 +29,19 @@ module "gke" {
   subnetwork   = var.subnetwork
 }
 
+
+module "namespace" {
+  source = "../../modules/namespace"
+
+  namespaces           = var.namespaces
+  ingress_service_name = var.ingress_service_name
+  ingress_service_port = var.ingress_service_port
+  internal_cidrs       = var.internal_cidrs
+  allowed_cidr         = var.allowed_cidr
+}
+
+
+
 module "cloudsql" {
   source                = "../../module/CloudSQL"
   project               = var.project_id
