@@ -1,5 +1,3 @@
-
-
 resource "kubernetes_namespace" "namespaces" {
   for_each = toset(var.namespaces)
 
@@ -7,7 +5,6 @@ resource "kubernetes_namespace" "namespaces" {
     name = each.value
   }
 }
-
 
 resource "kubernetes_ingress" "namespace_ingress" {
   for_each = toset(var.namespaces)
@@ -44,10 +41,13 @@ resource "kubernetes_network_policy" "deny_all_ingress" {
     pod_selector {}
 
     ingress {
-      from {
-        ip_block {
-          cidr   = "0.0.0.0/0"
-          except = concat(var.internal_cidrs, [var.allowed_cidr])
+      dynamic "from" {
+        for_each = var.internal_cidrs
+        content {
+          ip_block {
+            cidr   = "0.0.0.0/0"
+            except = [for cidr in var.internal_cidrs : cidr]
+          }
         }
       }
     }
@@ -68,9 +68,12 @@ resource "kubernetes_network_policy" "allow_all_internal_ingress" {
     pod_selector {}
 
     ingress {
-      from {
-        ip_block {
-          cidr = var.internal_cidrs[]
+      dynamic "from" {
+        for_each = var.internal_cidrs
+        content {
+          ip_block {
+            cidr = from.value
+          }
         }
       }
       from {
