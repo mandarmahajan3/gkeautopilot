@@ -9,10 +9,6 @@ terraform {
       version = "~> 2.0"
     }
   }
-  backend "gcs" {
-    bucket = "your-terraform-state-bucket"
-    prefix = "dev/terraform/state"
-  }
 }
 
 #code
@@ -26,10 +22,6 @@ module "gke" {
   subnetwork             = var.subnetwork
   authorized_network     = var.authorized_network
   master_ipv4_cidr_block = var.master_ipv4_cidr_block
-}
-
-output "cluster_name" {
-  value = module.gke.cluster_name
 }
 
 output "cluster_location" {
