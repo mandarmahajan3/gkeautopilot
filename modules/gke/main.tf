@@ -36,6 +36,10 @@ resource "google_container_cluster" "primary" {
     channel = "STABLE"
   }
 
+ vertical_pod_autoscaling {
+    enabled = var.enable_vertical_pod_autoscaling
+  }
+
 
   # Public endpoint
   private_cluster_config {
@@ -43,6 +47,18 @@ resource "google_container_cluster" "primary" {
   }
 }
 
+  master_auth {
+    client_certificate_config {
+      issue_client_certificate = var.issue_client_certificate
+    }
+  }
 
+  security_posture_config {
+    mode               = "BASIC"
+    vulnerability_mode = "VULNERABILITY_BASIC"
+  }
 
-
+  ip_allocation_policy {
+    cluster_secondary_range_name  = var.ip_range_pods
+    services_secondary_range_name = var.ip_range_services
+  }

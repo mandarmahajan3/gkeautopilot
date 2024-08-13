@@ -1,19 +1,4 @@
-provider "kubernetes" {
-  config_path            = "~/.kube/config"
-  config_context_cluster = var.k8s_cluster_name
-}
 
-# Retrieve the database password from Google Secret Manager
-data "google_secret_manager_secret_version" "db_password" {
-  provider = google
-  secret   = var.db_password_secret_id
-  version  = "latest"
-}
-
-# Decode the base64-encoded secret data
-locals {
-  db_password = base64decode(data.google_secret_manager_secret_version.db_password.secret_data)
-}
 
 resource "kubernetes_namespace" "namespaces" {
   for_each = toset(var.namespaces)
@@ -23,19 +8,6 @@ resource "kubernetes_namespace" "namespaces" {
   }
 }
 
-# Store the database password in a Kubernetes Secret in each namespace
-resource "kubernetes_secret" "db_secret" {
-  for_each = toset(var.namespaces)
-
-  metadata {
-    name      = "db-secret"
-    namespace = each.value
-  }
-
-  data = {
-    db_password = base64encode(local.db_password)
-  }
-}
 
 resource "kubernetes_ingress" "namespace_ingress" {
   for_each = toset(var.namespaces)
