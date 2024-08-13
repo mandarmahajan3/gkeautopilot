@@ -23,6 +23,7 @@ resource "google_container_cluster" "primary" {
   enable_autopilot = true
   network  = var.network
   subnetwork = var.subnetwork
+  
 
 
   master_authorized_networks_config {
@@ -38,7 +39,7 @@ resource "google_container_cluster" "primary" {
 
   # Public endpoint
   private_cluster_config {
-    enable_private_nodes = false
+    enable_private_nodes = true
   }
 }
 
