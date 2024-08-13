@@ -1,17 +1,17 @@
 # GCP Project and Region
-project_id = "your-prod-project-id"
+project_id = "uhg-poc-432004"
 region     = "us-central1"
 
 # GKE Cluster
-cluster_name           = "prod-gke-cluster"
-network                = "your-vpc-network"
-subnetwork             = "your-vpc-subnetwork"
-authorized_network     = "your-authorized-network-cidr"
+cluster_name           = "nonprod-nonphi"
+network                = "default"
+subnetwork             = "default"
+authorized_network     = "0.0.0.0/0"
 master_ipv4_cidr_block = "10.0.0.0/28"  # Adjust this as necessary
 
 # Kubernetes Namespaces and Ingress Configuration
-namespaces           = ["namespace1", "namespace2"]  # Replace with your namespaces
-ingress_service_name = "your-ingress-service-name"  # Replace with your service name
+namespaces           = ["dev", "alpha"]  # Replace with your namespaces
+ingress_service_name = "dev"  # Replace with your service name
 ingress_service_port = 80  # Replace with your service port
 
 # Network Policies
