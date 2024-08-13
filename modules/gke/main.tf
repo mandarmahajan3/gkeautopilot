@@ -12,19 +12,19 @@ terraform {
     }
   }
 }
+
 provider "google" {
   project = var.project_id
   region  = var.region
 }
 
 resource "google_container_cluster" "primary" {
-  name     = var.cluster_name
-  location = var.region
-  enable_autopilot = true
-  deletion_protection = false
-   network  = var.network
-  subnetwork = var.subnetwork
-  
+  name                  = var.cluster_name
+  location              = var.region
+  enable_autopilot      = true
+  deletion_protection   = false
+  network               = var.network
+  subnetwork            = var.subnetwork
 
   master_authorized_networks_config {
     cidr_blocks {
@@ -36,23 +36,22 @@ resource "google_container_cluster" "primary" {
     channel = "STABLE"
   }
 
- vertical_pod_autoscaling {
+  vertical_pod_autoscaling {
     enabled = true
   }
 
-addons_config {
-  gcp_filestore_csi_driver_config {
-    enabled = true
+  addons_config {
+    gcp_filestore_csi_driver_config {
+      enabled = true
+    }
+
+    horizontal_pod_autoscaling {
+      disabled = true
+    }
   }
 
-  horizontal_pod_autoscaling {
-    disabled = true
-  }
-}
-
-  # Public endpoint variable must use /28 block
   private_cluster_config {
-    enable_private_nodes = true
+    enable_private_nodes    = true
     enable_private_endpoint = false
     master_ipv4_cidr_block  = var.master_ipv4_cidr_block
   }
