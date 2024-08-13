@@ -11,14 +11,12 @@ terraform {
   }
 }
 
-provider "kubernetes" {
-  host                   = google_container_cluster.primary.endpoint
-  token                  = data.google_client_config.default.access_token
-  cluster_ca_certificate = base64decode(google_container_cluster.primary.master_auth[0].cluster_ca_certificate)
+provider "google" {
+  project = var.project_id
+  region  = var.region
 }
 
-#code
-
+# Define the GKE module
 module "gke" {
   source                 = "../../modules/gke"
   project_id             = var.project_id
@@ -30,10 +28,17 @@ module "gke" {
   master_ipv4_cidr_block = var.master_ipv4_cidr_block
 }
 
+# Define the Kubernetes provider using outputs from the GKE module
+provider "kubernetes" {
+  host                   = module.gke.cluster_endpoint
+  token                  = module.gke.access_token
+  cluster_ca_certificate = base64decode(module.gke.cluster_ca_certificate)
+}
+
+# Outputs
 output "cluster_location" {
   value = module.gke.cluster_location
 }
-
 
 module "namespace" {
   source                 = "../../modules/namespaces"
