@@ -1,83 +1,59 @@
 variable "project_id" {
-  description = "The GCP project ID"
+  description = "The GCP project ID where resources will be created."
   type        = string
 }
 
 variable "region" {
-  description = "The region to deploy GKE cluster"
+  description = "The GCP region where resources will be created."
   type        = string
 }
 
 variable "cluster_name" {
-  description = "The name of the GKE cluster"
+  description = "The name of the GKE cluster."
   type        = string
 }
 
 variable "network" {
-  description = "The VPC network name"
+  description = "The VPC network name where the GKE cluster will be deployed."
   type        = string
 }
 
 variable "subnetwork" {
-  description = "The VPC subnetwork name"
+  description = "The VPC subnetwork name where the GKE cluster will be deployed."
   type        = string
 }
 
 variable "authorized_network" {
-  description = "The authorized network CIDR block"
+  description = "The CIDR block for the authorized network that can access the GKE master."
   type        = string
 }
 
-variable "node_count" {
-  description = "The number of nodes in the cluster"
-  type        = number
-  default     = 3
-}
-
-variable "machine_type" {
-  description = "The machine type for nodes"
-  type        = string
-  default     = "e2-medium"
-}
-
-variable "service_account_token" {
-  description = "The service account token to be stored in the secret"
-  type        = string
-}
-
-variable "k8s_cluster_name" {
-  description = "The name of the Kubernetes cluster."
+variable "master_ipv4_cidr_block" {
+  description = "The CIDR block for the GKE master."
   type        = string
 }
 
 variable "namespaces" {
-  description = "List of namespaces to create."
+  description = "A list of namespaces to be created in the Kubernetes cluster."
   type        = list(string)
-}
-
-variable "internal_cidrs" {
-  description = "CIDR blocks that are considered internal (e.g., VPC CIDRs)."
-  type        = list(string)
-}
-
-variable "allowed_cidr" {
-  description = "Specific CIDR block to allow through ingress."
-  type        = string
 }
 
 variable "ingress_service_name" {
-  description = "The name of the service to route ingress traffic to."
+  description = "The service name for the Kubernetes Ingress resource."
   type        = string
 }
 
 variable "ingress_service_port" {
-  description = "The port on the service to route ingress traffic to."
+  description = "The service port for the Kubernetes Ingress resource."
   type        = number
 }
 
-# New Variables for Secret Manager Integration
+variable "internal_cidrs" {
+  description = "A list of internal CIDRs that are allowed ingress."
+  type        = list(string)
+}
 
-variable "db_password_secret_id" {
-  description = "The ID of the Google Secret Manager secret containing the database password."
+variable "allowed_cidr" {
+  description = "A CIDR block that is allowed ingress from outside."
   type        = string
 }

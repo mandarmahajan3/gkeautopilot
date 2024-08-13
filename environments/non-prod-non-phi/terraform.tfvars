@@ -1,28 +1,19 @@
 # GCP Project and Region
 project_id = "your-prod-project-id"
-region     = "us-central1"  # Update this to the region you want
+region     = "us-central1"
 
 # GKE Cluster
-cluster_name    = "prod-gke-cluster"
-network         = "your-vpc-network"       # Replace with your VPC network name
-subnetwork      = "your-vpc-subnetwork"    # Replace with your VPC subnetwork name
-authorized_network = "your-authorized-network-cidr"  # Replace with your authorized network CIDR block
+cluster_name           = "prod-gke-cluster"
+network                = "your-vpc-network"
+subnetwork             = "your-vpc-subnetwork"
+authorized_network     = "your-authorized-network-cidr"
+master_ipv4_cidr_block = "10.0.0.0/28"  # Adjust this as necessary
 
-# CloudSQL
-name_prefix         = "prod-mysql-instance"
-name_override       = null  # Set this to a specific name if you want to override the default name
-db_name             = "prod_db"
-mysql_version       = "MYSQL_8_0"  # Update if needed
-machine_type        = "db-n1-standard-1"  # Update the machine type as per your requirement
-master_user_password = "your-secure-password"
-master_user_name    = "admin"
-require_ssl         = true
+# Kubernetes Namespaces and Ingress Configuration
+namespaces           = ["namespace1", "namespace2"]  # Replace with your namespaces
+ingress_service_name = "your-ingress-service-name"  # Replace with your service name
+ingress_service_port = 80  # Replace with your service port
 
-#Cloud Registry
-repository_name      = "prod-artifact-repo"
-repository_format    = "DOCKER"
-repository_description = "Production Artifact Registry for Docker images"
-labels = {
-  environment = "prod"
-}
-artifact_viewer_member = "user:you@example.com"  # Replace with the correct IAM member
+# Network Policies
+internal_cidrs = ["10.0.0.0/24", "10.1.0.0/24"]  # Replace with your internal CIDRs
+allowed_cidr   = "192.168.1.0/24"  # Replace with your allowed CIDR

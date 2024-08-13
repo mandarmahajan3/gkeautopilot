@@ -15,40 +15,24 @@ terraform {
   }
 }
 
-module "gke" {
-  source       = "../../module/GKE"
-  project_id   = var.project_id
-  region       = var.region
-  cluster_name = var.cluster_name
-  network      = var.network
-  subnetwork   = var.subnetwork
-}
 
+
+module "gke" {
+  source                  = "../../module/GKE"
+  project_id              = var.project_id
+  region                  = var.region
+  cluster_name            = var.cluster_name
+  network                 = var.network
+  subnetwork              = var.subnetwork
+  authorized_network      = var.authorized_network
+  master_ipv4_cidr_block  = var.master_ipv4_cidr_block
+}
 
 module "namespace" {
-  source = "../../modules/namespace"
-
-  namespaces           = var.namespaces
-  ingress_service_name = var.ingress_service_name
-  ingress_service_port = var.ingress_service_port
-  internal_cidrs       = var.internal_cidrs
-  allowed_cidr         = var.allowed_cidr
-}
-
-
-
-module "cloudsql" {
-  source                = "../../module/CloudSQL"
-  project               = var.project_id
-  region                = var.region
-  db_name               = var.db_name
-  machine_type          = var.machine_type
-  db_password_secret_id = var.db_password_secret_id
-}
-
-module "artifact_registry" {
-  source    = "../../module/ArtifactRegistry"
-  project_id = var.project_id
-  region    = var.region
-  repo_name = var.repo_name
+  source                 = "../../modules/namespace"
+  namespaces             = var.namespaces
+  ingress_service_name   = var.ingress_service_name
+  ingress_service_port   = var.ingress_service_port
+  internal_cidrs         = var.internal_cidrs
+  allowed_cidr           = var.allowed_cidr
 }
