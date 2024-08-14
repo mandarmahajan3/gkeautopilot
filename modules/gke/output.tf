@@ -1,7 +1,7 @@
 output "cluster_name" {
   value = google_container_cluster.primary.name
 }
-
+#
 output "kubeconfig" {
   value = coalesce(<<EOT
 apiVersion: v1
