@@ -1,93 +1,97 @@
-locals {
-  namespaces_map = { for ns in var.namespaces : ns => {} }
-}
-
-
-resource "kubernetes_namespace" "namespaces" {
-  for_each = local.namespaces_map
-
+resource "kubernetes_namespace" "namespace" {
+  for_each = { for ns in var.namespaces : ns => ns }
   metadata {
-    name = each.key
+    name = each.value
   }
 }
 
-resource "kubernetes_ingress" "namespace_ingress" {
-  for_each = var.namespaces
+resource "kubernetes_ingress_v1" "namespace_ingress" {
+  for_each = kubernetes_namespace.namespace
 
   metadata {
-    name      = "${each.key}-ingress"
-    namespace = each.key
+    name      = "${each.value.metadata[0].name}-ingress"
+    namespace = each.value.metadata[0].name
   }
 
   spec {
-    rule {
-      http {
-        path {
-          path = "/"
-          backend {
-            service_name = var.ingress_service_name
-            service_port = var.ingress_service_port
-          }
+    default_backend {
+      service {
+        name = var.ingress_service_name
+        port {
+          number = var.ingress_service_port
         }
       }
     }
+
+    rule {
+      http {
+        path {
+          backend {
+            service {
+              name = var.ingress_service_name
+              port {
+                number = var.ingress_service_port
+              }
+            }
+          }
+
+          path = "/*"
+        }
+      }
+    }
+
+    # Optional: Configure TLS if needed
+    # tls {
+    #   secret_name = "tls-secret"
+    # }
   }
   depends_on = [kubernetes_namespace.namespaces]
-
 }
 
-resource "kubernetes_network_policy" "deny_all_ingress" {
-  for_each = toset(var.namespaces)
+
+
+resource "kubernetes_network_policy" "deny_all" {
+  for_each = kubernetes_namespace.namespace
 
   metadata {
-    name      = "deny-all-ingress"
-    namespace = each.key
+    name      = "${each.value.metadata[0].name}-deny-all"
+    namespace = each.value.metadata[0].name
   }
 
   spec {
     pod_selector {}
 
     ingress {
-      dynamic "from" {
-        for_each = var.internal_cidrs
-        content {
-          ip_block {
-            cidr   = "0.0.0.0/0"
-            except = [for cidr in var.internal_cidrs : cidr]
-          }
+      from {
+        ip_block {
+          cidr = "0.0.0.0/0"
         }
       }
     }
 
     policy_types = ["Ingress"]
   }
-
   depends_on = [kubernetes_namespace.namespaces]
 }
 
-resource "kubernetes_network_policy" "allow_all_internal_ingress" {
-  for_each = toset(var.namespaces)
+resource "kubernetes_network_policy" "allow_selected_cidrs" {
+  for_each = kubernetes_namespace.namespace
 
   metadata {
-    name      = "allow-all-internal-ingress"
-    namespace = each.key
+    name      = "${each.value.metadata[0].name}-allow-selected-cidrs"
+    namespace = each.value.metadata[0].name
   }
 
   spec {
     pod_selector {}
 
     ingress {
-      dynamic "from" {
-        for_each = var.internal_cidrs
-        content {
-          ip_block {
-            cidr = from.value
-          }
-        }
-      }
       from {
-        ip_block {
-          cidr = var.allowed_cidr
+        dynamic "ip_block" {
+          for_each = var.allowed_cidrs
+          content {
+            cidr = ip_block.value
+          }
         }
       }
     }
@@ -104,5 +108,52 @@ resource "kubernetes_service_account" "namespace_service_accounts" {
   metadata {
     name      = "${each.key}-sa"
     namespace = each.value
+  }
+}
+
+
+resource "kubernetes_service_v1" "namespace_service" {
+  for_each = kubernetes_namespace.namespace
+
+  metadata {
+    name      = var.ingress_service_name
+    namespace = each.value.metadata[0].name
+  }
+
+  spec {
+    selector = {
+      app = "myapp-${each.key}"
+    }
+    session_affinity = "ClientIP"
+    port {
+      port        = var.ingress_service_port
+      target_port = 80
+    }
+
+    type = "NodePort"
+  }
+  depends_on = [kubernetes_ingress_v1.namespace_ingress]
+}
+
+resource "kubernetes_pod_v1" "namespace_pod" {
+  for_each = kubernetes_namespace.namespace
+
+  metadata {
+    name      = "terraform-${each.value.metadata[0].name}-pod"
+    namespace = each.value.metadata[0].name
+    labels = {
+      app = "myapp-${each.key}"
+    }
+  }
+
+  spec {
+    container {
+      image = "nginx:1.21.6"
+      name  = "example"
+
+      port {
+        container_port = 80
+      }
+    }
   }
 }

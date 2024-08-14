@@ -18,7 +18,7 @@ variable "internal_cidrs" {
   type        = list(string)
 }
 
-variable "allowed_cidr" {
-  description = "CIDR block allowed for network ingress"
-  type        = string
+variable "allowed_cidrs" {
+  type    = list(string)
+  default = ["10.0.0.0/8", "192.168.0.0/16"]  # Example CIDRs
 }
