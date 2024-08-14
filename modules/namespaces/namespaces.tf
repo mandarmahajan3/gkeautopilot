@@ -9,14 +9,14 @@ resource "kubernetes_ingress_v1" "namespace_ingress" {
   for_each = kubernetes_namespace.namespace
 
   metadata {
-    name      = "${each.key}-ingress"
+    name      = "${each.value.metadata[0].name}-ingress"
     namespace = each.value.metadata[0].name
   }
 
   spec {
     default_backend {
       service {
-        name = each.key  # Use the namespace name as the service name
+        name = each.value.metadata[0].name
         port {
           number = var.ingress_service_port
         }
@@ -26,21 +26,23 @@ resource "kubernetes_ingress_v1" "namespace_ingress" {
     rule {
       http {
         path {
+          path = "/${each.value.metadata[0].name}/*"
+          path_type = "ImplementationSpecific"
           backend {
             service {
-              name = each.key  # Use the namespace name as the service name
+              name = each.value.metadata[0].name
               port {
                 number = var.ingress_service_port
               }
             }
           }
-          path = "/${each.key}"  # Use the namespace name as the path
         }
       }
     }
   }
   depends_on = [kubernetes_namespace.namespace]
 }
+
 
 resource "kubernetes_network_policy" "deny_all" {
   for_each = kubernetes_namespace.namespace
