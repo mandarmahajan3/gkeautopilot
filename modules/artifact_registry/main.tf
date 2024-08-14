@@ -8,7 +8,7 @@ resource "google_artifact_registry_repository" "artifact_repo" {
   format       = "DOCKER"
   location     = var.region
   description  = "Repository for Cirrus Apps"
-  labels = "cirrus"
+  labels = ["cirrus"]
    cleanup_policy_dry_run = false
   cleanup_policies {
     id     = "keep-tagged-release"
@@ -20,7 +20,6 @@ resource "google_artifact_registry_repository" "artifact_repo" {
         "cirrusalpha",
         "cirrusbravo",
         "cirrusmaster"]
-      package_name_prefixes = ["webapp", "mobile"]
     }
   }
 }
