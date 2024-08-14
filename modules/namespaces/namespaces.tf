@@ -9,14 +9,14 @@ resource "kubernetes_ingress_v1" "namespace_ingress" {
   for_each = kubernetes_namespace.namespace
 
   metadata {
-    name      = "${each.key}-ingress"  # Fixing the name to be unique per namespace
+    name      = "${each.key}-ingress"
     namespace = each.value.metadata[0].name
   }
 
   spec {
     default_backend {
       service {
-        name = var.ingress_service_name
+        name = each.key  # Use the namespace name as the service name
         port {
           number = var.ingress_service_port
         }
@@ -28,13 +28,13 @@ resource "kubernetes_ingress_v1" "namespace_ingress" {
         path {
           backend {
             service {
-              name = var.ingress_service_name
+              name = each.key  # Use the namespace name as the service name
               port {
                 number = var.ingress_service_port
               }
             }
           }
-          path = "/${var.ingress_service_name}"  # Fixing the path to be specific to the service name
+          path = "/${each.key}"  # Use the namespace name as the path
         }
       }
     }
@@ -106,7 +106,7 @@ resource "kubernetes_service_v1" "namespace_service" {
   for_each = kubernetes_namespace.namespace
 
   metadata {
-    name      = var.ingress_service_name
+    name      = each.key  # Use the namespace name as the service name
     namespace = each.value.metadata[0].name
   }
 
