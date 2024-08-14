@@ -9,7 +9,7 @@ resource "kubernetes_ingress_v1" "namespace_ingress" {
   for_each = kubernetes_namespace.namespace
 
   metadata {
-    name      = "${each.key}-ingress"  # Fixing the name to be unique per namespace
+    name      = "${each.value.metadata[0].name}-ingress"
     namespace = each.value.metadata[0].name
   }
 
@@ -34,7 +34,7 @@ resource "kubernetes_ingress_v1" "namespace_ingress" {
               }
             }
           }
-          path = "/${var.ingress_service_name}"  # Fixing the path to be specific to the service name
+          path = "/*"
         }
       }
     }
