@@ -48,3 +48,16 @@ module "namespace" {
   internal_cidrs         = var.internal_cidrs
   allowed_cidrs           = var.allowed_cidrs
 }
+
+
+# Artifact Registry 
+
+module "artifact_registry" {
+  source  = "../../modules/artifact_registry"  # Adjust the path to your module
+  project_id    = var.project_id
+  region         = var.region
+  repository_name = var.repository_name
+  artifact_viewer_member = var.artifact_viewer_member
+}
+
+
