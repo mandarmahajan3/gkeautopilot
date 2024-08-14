@@ -34,21 +34,13 @@ resource "kubernetes_ingress_v1" "namespace_ingress" {
               }
             }
           }
-
           path = "/*"
         }
       }
     }
-
-    # Optional: Configure TLS if needed
-    # tls {
-    #   secret_name = "tls-secret"
-    # }
   }
   depends_on = [kubernetes_namespace.namespace]
 }
-
-
 
 resource "kubernetes_network_policy" "deny_all" {
   for_each = kubernetes_namespace.namespace
@@ -86,11 +78,11 @@ resource "kubernetes_network_policy" "allow_selected_cidrs" {
     pod_selector {}
 
     ingress {
-      from {
-        dynamic "ip_block" {
-          for_each = var.allowed_cidrs
-          content {
-            cidr = ip_block.value
+      dynamic "from" {
+        for_each = var.allowed_cidrs
+        content {
+          ip_block {
+            cidr = from.value
           }
         }
       }
@@ -99,18 +91,16 @@ resource "kubernetes_network_policy" "allow_selected_cidrs" {
     policy_types = ["Ingress"]
   }
   depends_on = [kubernetes_namespace.namespace]
-
 }
 
 resource "kubernetes_service_account" "namespace_service_accounts" {
-  for_each = toset(var.namespaces)
+  for_each = kubernetes_namespace.namespace
 
   metadata {
     name      = "${each.key}-sa"
-    namespace = each.value
+    namespace = each.value.metadata[0].name
   }
 }
-
 
 resource "kubernetes_service_v1" "namespace_service" {
   for_each = kubernetes_namespace.namespace
@@ -129,7 +119,6 @@ resource "kubernetes_service_v1" "namespace_service" {
       port        = var.ingress_service_port
       target_port = 80
     }
-
     type = "NodePort"
   }
   depends_on = [kubernetes_ingress_v1.namespace_ingress]
