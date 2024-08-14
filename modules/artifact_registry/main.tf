@@ -27,4 +27,6 @@ resource "google_artifact_registry_repository_iam_member" "artifact_repo_viewer"
   repository = google_artifact_registry_repository.artifact_repo.repository_id
   role         = "roles/artifactregistry.reader"
   member       = var.artifact_viewer_member
+
+  depends_on = [ google_artifact_registry_repository.artifact_repo ]
 }
