@@ -16,4 +16,4 @@ ingress_service_port = 80  # Replace with your service port
 
 # Network Policies
 internal_cidrs = ["10.0.0.0/24", "10.1.0.0/24"]  # Replace with your internal CIDRs
-allowed_cidr   = "192.168.1.0/24"  # Replace with your allowed CIDR
+allowed_cidrs   = ["192.168.1.0/24", " 103.22.140.161/32"]  # Replace with your allowed CIDR
