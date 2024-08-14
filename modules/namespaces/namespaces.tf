@@ -27,7 +27,7 @@ resource "kubernetes_ingress_v1" "namespace_ingress" {
       http {
         path {
           path = "/${each.value.metadata[0].name}/*"
-          path_type = "ImplementationSpecific"
+          path_type = "Prefix"
           backend {
             service {
               name = each.value.metadata[0].name
