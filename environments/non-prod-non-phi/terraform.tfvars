@@ -18,3 +18,7 @@ ingress_service_port = 80  # Replace with your service port
 internal_cidrs = ["10.0.0.0/24", "10.1.0.0/24"]  # Replace with your internal CIDRs
 #ensure no white spaces
 allowed_cidrs   = ["0.0.0.0/0", "103.22.140.161/32"]  # Replace with your allowed CIDR
+
+#Registry 
+repository_name = "nonprod-nonphi"
+artifact_viewer_member = "661178300511-compute@developer.gserviceaccount.com"

@@ -58,3 +58,14 @@ variable "allowed_cidrs" {
   type    = list(string)
   default = ["10.0.0.0/8", "192.168.0.0/16"]  # Example CIDRs
 }
+
+
+variable "repository_name" {
+  description = "The name of the Artifact Registry repository."
+  type        = string
+}
+
+variable "artifact_viewer_member" {
+  description = "The member (email) that will be granted the `roles/artifactregistry.reader` role."
+  type        = string
+}
