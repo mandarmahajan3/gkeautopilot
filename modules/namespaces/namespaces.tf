@@ -162,7 +162,7 @@ resource "kubernetes_ingress_v1" "namespace_routes" {
       http {
         path {
           path = "/dev/*"
-          path_type = "Prefix"
+          path_type = "ImplementationSpecific"
           backend {
             service {
               name = "${each.value.metadata[0].name}-dev"
@@ -175,7 +175,7 @@ resource "kubernetes_ingress_v1" "namespace_routes" {
 
         path {
           path = "/alpha/*"
-          path_type = "Prefix"
+          path_type = "ImplementationSpecific"
           backend {
             service {
               name = "${each.value.metadata[0].name}-alpha"
