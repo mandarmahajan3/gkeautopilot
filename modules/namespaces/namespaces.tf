@@ -17,15 +17,6 @@ resource "kubernetes_ingress_v1" "namespace_ingress" {
   }
 
   spec {
-    default_backend {
-      service {
-        name = each.value.metadata[0].name
-        port {
-          number = var.ingress_service_port
-        }
-      }
-    }
-
     rule {
       http {
         path {
