@@ -4,18 +4,29 @@ provider "google" {
 }
 
 resource "google_artifact_registry_repository" "artifact_repo" {
-  provider = google
-
-  name         = var.repository_name
-  format       = var.repository_format
+  repository_id = var.repository_name
+  format       = "DOCKER"
   location     = var.region
-  description  = var.repository_description
-
-  labels = var.labels
+  description  = "Repository for Cirrus Apps"
+  labels = "cirrus"
+   cleanup_policy_dry_run = false
+  cleanup_policies {
+    id     = "keep-tagged-release"
+    action = "KEEP"
+    condition {
+      tag_state             = "TAGGED"
+      tag_prefixes          = [
+        "cirrusdev",
+        "cirrusalpha",
+        "cirrusbravo",
+        "cirrusmaster"]
+      package_name_prefixes = ["webapp", "mobile"]
+    }
+  }
 }
 
 resource "google_artifact_registry_repository_iam_member" "artifact_repo_viewer" {
-  repository = google_artifact_registry_repository.artifact_repo.id
-  role       = "roles/artifactregistry.reader"
-  member     = var.artifact_viewer_member
+  repository = google_artifact_registry_repository.artifact_repo.repository_id
+  role         = "roles/artifactregistry.reader"
+  member       = var.artifact_viewer_member
 }
