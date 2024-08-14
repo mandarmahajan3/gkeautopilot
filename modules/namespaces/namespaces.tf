@@ -27,7 +27,7 @@ resource "kubernetes_ingress_v1" "namespace_ingress" {
       http {
         path {
           path = "/${each.value.metadata[0].name}/*"
-          path_type = "Prefix"
+          path_type = "ImplementationSpecific"
           backend {
             service {
               name = each.value.metadata[0].name
@@ -147,4 +147,46 @@ resource "kubernetes_pod_v1" "namespace_pod" {
       }
     }
   }
+}
+
+resource "kubernetes_ingress_v1" "namespace_routes" {
+  for_each = kubernetes_namespace.namespace
+
+  metadata {
+    name      = "${each.value.metadata[0].name}-routes"
+    namespace = each.value.metadata[0].name
+  }
+
+  spec {
+    rule {
+      http {
+        path {
+          path = "/dev/*"
+          path_type = "Prefix"
+          backend {
+            service {
+              name = "${each.value.metadata[0].name}-dev"
+              port {
+                number = var.ingress_service_port
+              }
+            }
+          }
+        }
+
+        path {
+          path = "/alpha/*"
+          path_type = "Prefix"
+          backend {
+            service {
+              name = "${each.value.metadata[0].name}-alpha"
+              port {
+                number = var.ingress_service_port
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  depends_on = [kubernetes_namespace.namespace]
 }
