@@ -8,8 +8,7 @@ resource "google_artifact_registry_repository" "artifact_repo" {
   format       = "DOCKER"
   location     = var.region
   description  = "Repository for Cirrus Apps"
-  labels = ["cirrus"]
-   cleanup_policy_dry_run = false
+  cleanup_policy_dry_run = false
   cleanup_policies {
     id     = "keep-tagged-release"
     action = "KEEP"
