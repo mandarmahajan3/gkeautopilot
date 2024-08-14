@@ -45,7 +45,7 @@ resource "kubernetes_ingress_v1" "namespace_ingress" {
     #   secret_name = "tls-secret"
     # }
   }
-  depends_on = [kubernetes_namespace.namespaces]
+  depends_on = [kubernetes_namespace.namespace]
 }
 
 
@@ -71,7 +71,7 @@ resource "kubernetes_network_policy" "deny_all" {
 
     policy_types = ["Ingress"]
   }
-  depends_on = [kubernetes_namespace.namespaces]
+  depends_on = [kubernetes_namespace.namespace]
 }
 
 resource "kubernetes_network_policy" "allow_selected_cidrs" {
@@ -98,7 +98,7 @@ resource "kubernetes_network_policy" "allow_selected_cidrs" {
 
     policy_types = ["Ingress"]
   }
-  depends_on = [kubernetes_namespace.namespaces]
+  depends_on = [kubernetes_namespace.namespace]
 
 }
 
