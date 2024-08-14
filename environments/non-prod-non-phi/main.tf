@@ -46,5 +46,5 @@ module "namespace" {
   ingress_service_name   = var.ingress_service_name
   ingress_service_port   = var.ingress_service_port
   internal_cidrs         = var.internal_cidrs
-  allowed_cidr           = var.allowed_cidr
+  allowed_cidrs           = var.allowed_cidrs
 }
