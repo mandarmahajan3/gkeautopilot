@@ -3,7 +3,7 @@ output "cluster_name" {
 }
 #
 output "kubeconfig" {
-  value = coalesce(<<EOT
+  value = <<EOT
 apiVersion: v1
 kind: Config
 clusters:
@@ -21,8 +21,9 @@ users:
 - name: ${google_container_cluster.primary.name}
   user:
     token: ${data.google_client_config.default.access_token}
-EOT, "Cluster not created yet")
+EOT
 }
+
 
 
 output "cluster_location" {
