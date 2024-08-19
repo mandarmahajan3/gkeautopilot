@@ -69,3 +69,29 @@ variable "artifact_viewer_member" {
   description = "The member (email) that will be granted the `roles/artifactregistry.reader` role."
   type        = string
 }
+
+variable "db_version" {
+  type        = string
+  description = "The version of MySQL to use"
+  default     = "MYSQL_5_7"
+}
+
+variable "db_tier" {
+  type        = string
+  description = "The machine type to use for the instance"
+}
+
+variable "database_name" {
+  type        = string
+  description = "Name of the database to create"
+}
+
+variable "db_username" {
+  type        = string
+  description = "The master username for the database"
+}
+
+variable "allowed_consumer_projects" {
+  type        = list(string)
+  description = "List of allowed consumer projects for PSC"
+}

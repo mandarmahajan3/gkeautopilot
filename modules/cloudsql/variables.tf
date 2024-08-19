@@ -1,57 +1,40 @@
-variable "project" {
-  description = "The GCP project in which to create the resources."
+variable "project_id" {
   type        = string
+  description = "The ID of the GCP project"
 }
 
 variable "region" {
-  description = "The region in which to deploy the Cloud SQL instance."
   type        = string
-  default     = "us-central1" # or specify the preferred default region
+  description = "The region where the Cloud SQL instance will be created"
 }
 
-variable "name_prefix" {
-  description = "Prefix to use for resource names. A random suffix will be appended."
-  type        = string
-  default     = "mysql-instance"
+variable "namespaces" {
+  type        = list(string)
+  description = "List of Kubernetes namespaces"
 }
 
-variable "name_override" {
-  description = "Override the generated name with a custom name. If null, the generated name will be used."
+variable "db_version" {
   type        = string
-  default     = null
+  description = "The version of MySQL to use"
+  default     = "MYSQL_5_7"
 }
 
-variable "db_name" {
-  description = "The name of the default database to create in the Cloud SQL instance."
+variable "db_tier" {
   type        = string
+  description = "The machine type to use for the instance"
 }
 
-variable "mysql_version" {
-  description = "The MySQL version to use for the Cloud SQL instance."
+variable "database_name" {
   type        = string
-  default     = "MYSQL_5_7" # or specify the preferred MySQL version
+  description = "Name of the database to create"
 }
 
-variable "machine_type" {
-  description = "The machine type to use for the Cloud SQL instance."
+variable "db_username" {
   type        = string
-  default     = "db-f1-micro" # or specify the preferred machine type
+  description = "The master username for the database"
 }
 
-variable "master_user_password" {
-  description = "The password for the master user of the database."
-  type        = string
-  sensitive   = true
-}
-
-variable "master_user_name" {
-  description = "The username for the master user of the database."
-  type        = string
-  default     = "root"
-}
-
-variable "require_ssl" {
-  description = "Enforce SSL connections to the Cloud SQL instance."
-  type        = bool
-  default     = true
+variable "allowed_consumer_projects" {
+  type        = list(string)
+  description = "List of allowed consumer projects for PSC"
 }

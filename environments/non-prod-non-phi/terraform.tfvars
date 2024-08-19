@@ -10,7 +10,7 @@ authorized_network     = "0.0.0.0/0"
 master_ipv4_cidr_block = "10.0.0.0/28"  # Adjust this as necessary
 
 # Kubernetes Namespaces and Ingress Configuration
-namespaces           = ["dev", "alpha"]  # Replace with your namespaces
+namespaces           = ["dev", "alpha","master"]  # Replace with your namespaces
 ingress_service_name = "dev"  # Replace with your service name
 ingress_service_port = 80  # Replace with your service port
 
@@ -22,3 +22,11 @@ allowed_cidrs   = ["0.0.0.0/0", "103.22.140.161/32"]  # Replace with your allowe
 #Registry 
 repository_name = "nonprod-nonphi"
 artifact_viewer_member = "serviceAccount:661178300511-compute@developer.gserviceaccount.com"
+
+#MySQL
+
+  db_version               = "MYSQL_5_7"
+  db_tier                  = "db-f1-micro"
+  database_name            = "my_database"
+  db_username              = "admin"
+  allowed_consumer_projects = [var.project_id]
