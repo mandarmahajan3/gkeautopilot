@@ -17,6 +17,6 @@ module "cloudsql_database" {
   region             = var.region
   project_id         = var.project_id
   database_name      = var.database_name # Passing database_name variable
-  instance_name      = module.cloudsql_instance.instance_name
+  instance_name      = module.cloudsql_instance.name
   db_username        = var.db_username # Passing db_username variable
 }
