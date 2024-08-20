@@ -16,7 +16,7 @@ resource "google_sql_database" "database" {
 resource "google_sql_user" "master_user" {
   name     = var.db_username
   instance = var.instance_name
-  password = random_password.db_password[each.key].result
+  password = random_password.db_password.result
 }
 
 # Store the master user password in GCP Secret Manager
