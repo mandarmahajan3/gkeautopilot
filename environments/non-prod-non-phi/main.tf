@@ -20,5 +20,5 @@ module "cloudsql_database" {
   instance_name      = var.instance_name
   db_username        = var.db_username # Passing db_username variable
 
-  depends_on = [ module.cloudsql_instance ]
+#  depends_on = [ module.cloudsql_instance ]
 }
