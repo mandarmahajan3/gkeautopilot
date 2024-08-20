@@ -1,6 +1,5 @@
 
 
-/*
 
 module "cloudsql_instance" {
   source             = "../../modules/cloudsql_instance"
@@ -11,7 +10,7 @@ module "cloudsql_instance" {
   db_tier            = var.db_tier
   allowed_consumer_projects = var.allowed_consumer_projects
 }
-*/
+
 module "cloudsql_database" {
   source             = "../../modules/cloudsql_database"
   region             = var.region
@@ -20,5 +19,5 @@ module "cloudsql_database" {
   instance_name      = var.instance_name
   db_username        = var.db_username # Passing db_username variable
 
-#  depends_on = [ module.cloudsql_instance ]
+  depends_on = [ module.cloudsql_instance ]
 }
