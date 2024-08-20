@@ -29,8 +29,7 @@ artifact_viewer_member = "serviceAccount:661178300511-compute@developer.gservice
   db_tier                  = "db-f1-micro"
   database_name            = "my_database"
   db_username              = "admin"
-  allowed_consumer_projects = [var.project_id]
+  allowed_consumer_projects = ["uhg-poc-432004"]
 
 #Instance
   instance_name = "dev"
-  
