@@ -1,6 +1,6 @@
 
 
-
+/*
 
 module "cloudsql_instance" {
   source             = "../../modules/cloudsql_instance"
@@ -11,7 +11,7 @@ module "cloudsql_instance" {
   db_tier            = var.db_tier
   allowed_consumer_projects = var.allowed_consumer_projects
 }
-
+*/
 module "cloudsql_database" {
   source             = "../../modules/cloudsql_database"
   region             = var.region
