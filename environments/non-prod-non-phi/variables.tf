@@ -95,3 +95,7 @@ variable "allowed_consumer_projects" {
   type        = list(string)
   description = "List of allowed consumer projects for PSC"
 }
+variable "instance_name" {
+  type        = string
+  description = "Name of the database to create"
+}

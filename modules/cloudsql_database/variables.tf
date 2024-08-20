@@ -28,6 +28,10 @@ variable "database_name" {
   type        = string
   description = "Name of the database to create"
 }
+variable "instance_name" {
+  type        = string
+  description = "Name of the database to create"
+}
 
 variable "db_username" {
   type        = string
