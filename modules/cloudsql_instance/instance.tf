@@ -13,7 +13,7 @@ resource "google_sql_database_instance" "instance" {
     tier = var.db_tier
 
     ip_configuration {
-      ssl_mode = "ENCRYPTED ONLY"
+      ssl_mode = "ENCRYPTED_ONLY"
       ipv4_enabled = "false"
       psc_config {
         psc_enabled = true
