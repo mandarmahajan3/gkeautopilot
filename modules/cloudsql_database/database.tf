@@ -29,9 +29,6 @@ resource "google_secret_manager_secret" "db_master_secret" {
       replicas {
         location = "us-central1"
       }
-      replicas {
-        location = "us-central1"
-      }
     }
   }
 }
