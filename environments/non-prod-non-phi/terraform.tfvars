@@ -27,7 +27,7 @@ artifact_viewer_member = "serviceAccount:661178300511-compute@developer.gservice
 
   db_version               = "MYSQL_5_7"
   db_tier                  = "db-f1-micro"
-  database_name            = "my_database2"
+  database_name            = "my_database"
   db_username              = "admin"
   allowed_consumer_projects = ["uhg-poc-432004"]
 
