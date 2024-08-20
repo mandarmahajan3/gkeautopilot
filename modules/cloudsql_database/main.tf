@@ -1,6 +1,6 @@
 #Create a module for single database instance creation. 
 
-# Generate a unique password for each namespace
+# Generate a unique password for each database
 resource "random_password" "db_password" {
   length   = 16
   special  = true
