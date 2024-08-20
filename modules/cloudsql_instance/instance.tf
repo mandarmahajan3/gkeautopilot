@@ -1,5 +1,5 @@
 
-# Create Cloud SQL instance for each namespace with PSC enabled
+# Create Cloud SQL instance with PSC enabled
 resource "google_sql_database_instance" "instance" {
 
   name             = var.instance_name

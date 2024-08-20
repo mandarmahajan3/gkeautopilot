@@ -1,12 +1,12 @@
 #Create a module for single database instance creation. 
 
-# Generate a unique password for each database
+# Generate a unique password for each environment
 resource "random_password" "db_password" {
   length   = 16
   special  = true
 }
 
-# Create the database for each namespace
+# Create the database for each environment
 resource "google_sql_database" "database" {
   name     = var.database_name
   instance = var.instance_name
