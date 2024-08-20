@@ -30,3 +30,7 @@ artifact_viewer_member = "serviceAccount:661178300511-compute@developer.gservice
   database_name            = "my_database"
   db_username              = "admin"
   allowed_consumer_projects = [var.project_id]
+
+#Instance
+  instance_name = "dev"
+  
