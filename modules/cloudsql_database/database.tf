@@ -23,9 +23,16 @@ resource "google_sql_user" "master_user" {
 resource "google_secret_manager_secret" "db_master_secret" {
 
   secret_id = "${var.instance_name}-db-master-password"
-
+  
   replication {
-    auto {}
+    user_managed {
+      replicas {
+        location = "us-central1"
+      }
+      replicas {
+        location = "us-central1"
+      }
+    }
   }
 }
 
