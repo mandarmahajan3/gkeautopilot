@@ -62,18 +62,27 @@ resource "google_sql_user" "ddl_user" {
   host     = "%"
 }
 
-# Grant DML and DDL permissions using a local-exec provisioner
-resource "null_resource" "grant_permissions" {
+resource "null_resource" "setup_permissions" {
   provisioner "local-exec" {
     command = <<EOT
+    # Run Cloud SQL Proxy
+    ./cloud_sql_proxy -dir=/cloudsql -instances=${var.project_id}:${var.region}:${var.instance_name}=tcp:3306 &
+
+    # Wait for the proxy to start
+    sleep 10
+
+    # Grant permissions using mysql
     mysql -u root -p"${random_password.master_user_password.result}" \
-    -h "2066a20e8cd8.1i8h65ayyhko7.us-central1.sql.goog." \
-    -D "${var.database_name}" -e "
+    -h 127.0.0.1 -P 3306 -D "${var.database_name}" -e "
     GRANT SELECT, INSERT, UPDATE, DELETE ON ${var.database_name}.* TO 'dml_user'@'%';
-    GRANT CREATE, ALTER, DROP ON ${var.database_name}.* TO 'ddl_user'@'%';"
+    GRANT CREATE, ALTER, DROP ON ${var.database_name}.* TO 'ddl_user'@'%';
+    "
+
+    # Kill the Cloud SQL Proxy
+    pkill cloud_sql_proxy
     EOT
   }
-  
+
   depends_on = [
     google_sql_user.master_user,
     google_sql_user.dml_user,
