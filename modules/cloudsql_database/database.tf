@@ -1,3 +1,8 @@
+# Data source to get the Cloud SQL instance information by name
+data "google_sql_database_instance" "instance" {
+  name = var.instance_name
+}
+
 # Generate unique passwords for each user
 resource "random_password" "master_user_password" {
   length   = 16
@@ -60,7 +65,7 @@ resource "google_sql_user" "ddl_user" {
 resource "null_resource" "grant_permissions" {
   provisioner "local-exec" {
     command = <<EOT
-    mysql -u root -p"${random_password.master_user_password.result}" -h "${google_sql_database_instance.your_instance.public_ip_address}" -D "${var.database_name}" -e "
+    mysql -u root -p"${random_password.master_user_password.result}" -h "${data.google_sql_database_instance.instance.public_ip_address}" -D "${var.database_name}" -e "
     GRANT SELECT, INSERT, UPDATE, DELETE ON ${var.database_name}.* TO 'dml_user'@'%';
     GRANT CREATE, ALTER, DROP ON ${var.database_name}.* TO 'ddl_user'@'%';"
     EOT
