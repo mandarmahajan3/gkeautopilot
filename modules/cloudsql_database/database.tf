@@ -1,23 +1,23 @@
 # Data source to get the Cloud SQL instance information by name
 data "google_sql_database_instance" "instance" {
-  name = var.instance_name
+  name    = var.instance_name
   project = var.project_id
 }
 
 # Generate unique passwords for each user
 resource "random_password" "master_user_password" {
-  length   = 16
-  special  = true
+  length  = 16
+  special = true
 }
 
 resource "random_password" "dml_user_password" {
-  length   = 16
-  special  = true
+  length  = 16
+  special = true
 }
 
 resource "random_password" "ddl_user_password" {
-  length   = 16
-  special  = true
+  length  = 16
+  special = true
 }
 
 # Create the master user for the database
@@ -42,8 +42,8 @@ resource "google_secret_manager_secret" "db_master_secret" {
 
 # Store the master user password in Secret Manager
 resource "google_secret_manager_secret_version" "db_master_secret_version" {
-   secret      = google_secret_manager_secret.db_master_secret.id
-   secret_data = random_password.master_user_password.result
+  secret      = google_secret_manager_secret.db_master_secret.id
+  secret_data = random_password.master_user_password.result
 }
 
 # Create the DML user
@@ -75,18 +75,17 @@ resource "null_resource" "grant_permissions" {
   }
   
   depends_on = [
+    google_sql_user.master_user,
     google_sql_user.dml_user,
-    google_sql_user.ddl_user,
+    google_sql_user.ddl_user
   ]
 }
 
-  
-  depends_on = [
-    google_sql_user.dml_user,
-    google_sql_user.ddl_user,
-  ]
-}
-
+# Outputs
 output "cloudsql_instance_public_ip" {
+  value = data.google_sql_database_instance.instance.public_ip_address
+}
+
+output "cloudsql_instance_private_ip" {
   value = data.google_sql_database_instance.instance.private_ip_address
 }
