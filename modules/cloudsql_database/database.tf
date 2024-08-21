@@ -67,7 +67,7 @@ resource "null_resource" "grant_permissions" {
   provisioner "local-exec" {
     command = <<EOT
     mysql -u root -p"${random_password.master_user_password.result}" \
-    -h "${data.google_sql_database_instance.instance.public_ip_address != "" ? data.google_sql_database_instance.instance.public_ip_address : data.google_sql_database_instance.instance.private_ip_address}" \
+    -h "2066a20e8cd8.1i8h65ayyhko7.us-central1.sql.goog." \
     -D "${var.database_name}" -e "
     GRANT SELECT, INSERT, UPDATE, DELETE ON ${var.database_name}.* TO 'dml_user'@'%';
     GRANT CREATE, ALTER, DROP ON ${var.database_name}.* TO 'ddl_user'@'%';"
