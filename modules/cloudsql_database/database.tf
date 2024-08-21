@@ -1,6 +1,7 @@
 # Data source to get the Cloud SQL instance information by name
 data "google_sql_database_instance" "instance" {
   name = var.instance_name
+  project = var.project_id
 }
 
 # Generate unique passwords for each user
@@ -75,4 +76,8 @@ resource "null_resource" "grant_permissions" {
     google_sql_user.dml_user,
     google_sql_user.ddl_user,
   ]
+}
+
+output "cloudsql_instance_public_ip" {
+  value = data.google_sql_database_instance.instance.public_ip_address
 }
