@@ -1,5 +1,5 @@
 resource "google_compute_address" "default" {
-  name         = "psc-compute-address-${google_sql_database_instance.default.name}"
+  name         = "psc-compute-address-${google_sql_database_instance.default}"
   region       = "us-central1"
   address_type = "INTERNAL"
   subnetwork   = "default"     # Replace value with the name of the subnet here.
