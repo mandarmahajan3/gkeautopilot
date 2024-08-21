@@ -66,7 +66,7 @@ resource "google_sql_user" "ddl_user" {
 resource "null_resource" "grant_permissions" {
   provisioner "local-exec" {
     command = <<EOT
-    mysql -u root -p"${random_password.master_user_password.result}" -h "${data.google_sql_database_instance.instance.public_ip_address}" -D "${var.database_name}" -e "
+    mysql -u root -p"${random_password.master_user_password.result}" -h "${data.google_sql_database_instance.instance.private_ip_address}" -D "${var.database_name}" -e "
     GRANT SELECT, INSERT, UPDATE, DELETE ON ${var.database_name}.* TO 'dml_user'@'%';
     GRANT CREATE, ALTER, DROP ON ${var.database_name}.* TO 'ddl_user'@'%';"
     EOT
@@ -79,5 +79,5 @@ resource "null_resource" "grant_permissions" {
 }
 
 output "cloudsql_instance_public_ip" {
-  value = data.google_sql_database_instance.instance.public_ip_address
+  value = data.google_sql_database_instance.instance.private_ip_address
 }
