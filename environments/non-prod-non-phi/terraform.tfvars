@@ -25,7 +25,7 @@ artifact_viewer_member = "serviceAccount:661178300511-compute@developer.gservice
 
 #MySQL
 
-  db_version               = "MYSQL_5_7"
+  db_version               = "MYSQL_8_0"
   db_tier                  = "db-f1-micro"
   database_name            = "my_database"
   db_username              = "admin"
