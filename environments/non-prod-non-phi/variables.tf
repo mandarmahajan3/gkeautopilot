@@ -99,3 +99,26 @@ variable "instance_name" {
   type        = string
   description = "Name of the database to create"
 }
+
+
+
+variable "read_replica_regions" {
+  type        = list(string)
+  description = "Regions for the read replica"
+}
+
+variable "backup_configuration" {
+  type = object({
+    enabled                        = bool
+    start_time                     = string
+    binary_log_enabled             = bool
+    point_in_time_recovery_enabled = bool
+  })
+  description = "Backup configuration settings"
+}
+
+variable "edition" {
+  type        = string
+  description = "The edition of the Cloud SQL instance"
+  default     = "ENTERPRISE_PLUS"
+}

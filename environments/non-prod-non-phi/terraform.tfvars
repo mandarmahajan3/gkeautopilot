@@ -33,3 +33,18 @@ artifact_viewer_member = "serviceAccount:661178300511-compute@developer.gservice
 
 #Instance
   instance_name = "dev"
+
+
+# HA
+read_replica_regions    = ["us-west1", "us-east1"]
+
+# Backup configuration
+backup_configuration = {
+  enabled                         = true
+  start_time                      = "03:00"
+  binary_log_enabled              = true
+  point_in_time_recovery_enabled  = true
+}
+
+# Edition
+edition = "ENTERPRISE_PLUS"
