@@ -48,3 +48,4 @@ backup_configuration = {
 
 # Edition
 edition = "ENTERPRISE_PLUS"
+
