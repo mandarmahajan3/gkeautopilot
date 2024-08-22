@@ -78,7 +78,7 @@ resource "google_sql_database_instance" "read_replica" {
 
 resource "google_sql_user" "iam_group_user" {
   name     = "GCP_CIRRUS_HCC_POC@groups.optum.com"
-  instance = google_sql_database_instance.name
+  instance = var.instance_name
   type     = "CLOUD_IAM_GROUP"
 }
 
