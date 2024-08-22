@@ -1,16 +1,10 @@
-# gkeautopilot
-
-
-test
-
-123
-
-
-
-snapmirror delete -source-path -destination-path
-
-
- vserver peer delete -vserver -peer-vserver -force 
-
-
- vol clone split start -vserver amit -flexclone venky_clone_1035 
+module.dev_db_pbsb01_instance.google_sql_database_instance.master
+module.network.google_compute_address.ip-address1
+module.network.google_compute_address.ip-address2
+module.network.google_compute_firewall.firewall
+module.network.google_compute_global_address.private_ip_alloc
+module.network.google_compute_network.vpc
+module.network.google_compute_router.router
+module.network.google_compute_router_nat.gateway
+module.network.google_compute_subnetwork.subnet
+module.network.google_service_networking_connection.vpc_connection

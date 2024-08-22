@@ -90,6 +90,10 @@ resource "null_resource" "setup_permissions" {
   ]
 }
 
+
+
+
+
 # Outputs
 output "cloudsql_instance_public_ip" {
   value = data.google_sql_database_instance.instance.public_ip_address
