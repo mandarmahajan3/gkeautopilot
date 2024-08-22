@@ -36,7 +36,7 @@ artifact_viewer_member = "serviceAccount:661178300511-compute@developer.gservice
 
 
 # HA
-read_replica_regions    = ["us-west1", "us-east1"]
+read_replica_regions    = ["us-east4"]
 
 # Backup configuration
 backup_configuration = {
@@ -49,3 +49,4 @@ backup_configuration = {
 # Edition
 edition = "ENTERPRISE_PLUS"
 
+# Data Cache

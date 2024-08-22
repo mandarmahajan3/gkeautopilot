@@ -57,7 +57,7 @@ resource "google_sql_database_instance" "instance" {
     }
   }
 }
-
+/*
 # Create a read replica for the Cloud SQL instance
 resource "google_sql_database_instance" "read_replica" {
   count                = length(var.read_replica_regions)
@@ -72,3 +72,4 @@ resource "google_sql_database_instance" "read_replica" {
     edition = "ENTERPRISE_PLUS"
   }
 }
+*/
