@@ -25,7 +25,7 @@ module "cloudsql_database" {
 
 # Call the HA Cloud SQL instance module
 module "ha_cloud_sql_instance" {
-  source = "./modules/cloudsql_instance"
+  source = "../../modules/cloudsql_ha"
 
   project_id                = var.project_id
   region                    = var.region
