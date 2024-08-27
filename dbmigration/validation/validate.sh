@@ -1,35 +1,44 @@
 #!/bin/bash
 
 # Parameters
-SOURCE_MYSQL_USER=$1
-SOURCE_MYSQL_PASSWORD=$2
-SOURCE_MYSQL_HOST=$3
-SOURCE_MYSQL_DATABASE=$4
+SOURCE_MYSQL_USER="root"
+SOURCE_MYSQL_PASSWORD="password"
+SOURCE_MYSQL_HOST="localhost"
+SOURCE_MYSQL_DATABASE="classicmodels"
 
-DEST_MYSQL_USER=$5
-DEST_MYSQL_PASSWORD=$6
-DEST_MYSQL_HOST=$7
-DEST_MYSQL_DATABASE=$8
+DEST_MYSQL_USER="root"
+DEST_MYSQL_PASSWORD="password"
+DEST_CLOUDSQL_INSTANCE="mysql-cirrus"
+DEST_MYSQL_DATABASE="classicmodels"
 
-TABLES=$9  # Comma-separated list of tables to validate
+TABLES="customers"  # Table to validate
 
 # Validate parameters
-if [[ -z "$SOURCE_MYSQL_USER" || -z "$SOURCE_MYSQL_PASSWORD" || -z "$SOURCE_MYSQL_HOST" || -z "$SOURCE_MYSQL_DATABASE" || -z "$DEST_MYSQL_USER" || -z "$DEST_MYSQL_PASSWORD" || -z "$DEST_MYSQL_HOST" || -z "$DEST_MYSQL_DATABASE" ]]; then
-  echo "Usage: $0 <SOURCE_MYSQL_USER> <SOURCE_MYSQL_PASSWORD> <SOURCE_MYSQL_HOST> <SOURCE_MYSQL_DATABASE> <DEST_MYSQL_USER> <DEST_MYSQL_PASSWORD> <DEST_MYSQL_HOST> <DEST_MYSQL_DATABASE> [<TABLES>]"
+if [[ -z "$SOURCE_MYSQL_USER" || -z "$SOURCE_MYSQL_PASSWORD" || -z "$SOURCE_MYSQL_HOST" || -z "$SOURCE_MYSQL_DATABASE" || -z "$DEST_MYSQL_USER" || -z "$DEST_MYSQL_PASSWORD" || -z "$DEST_CLOUDSQL_INSTANCE" || -z "$DEST_MYSQL_DATABASE" ]]; then
+  echo "Usage: $0 <SOURCE_MYSQL_USER> <SOURCE_MYSQL_PASSWORD> <SOURCE_MYSQL_HOST> <SOURCE_MYSQL_DATABASE> <DEST_MYSQL_USER> <DEST_MYSQL_PASSWORD> <DEST_CLOUDSQL_INSTANCE> <DEST_MYSQL_DATABASE> [<TABLES>]"
   exit 1
 fi
+
+# Path to cloud_sql_proxy
+CLOUD_SQL_PROXY_PATH="/path/to/cloud_sql_proxy"
 
 # Validate row counts
 echo "Validating row counts..."
 
-if [[ -z "$TABLES" ]]; then
-  TABLES=$(mysql -u "$SOURCE_MYSQL_USER" -p"$SOURCE_MYSQL_PASSWORD" -h "$SOURCE_MYSQL_HOST" -D "$SOURCE_MYSQL_DATABASE" -e "SHOW TABLES;" -s -N)
-fi
-
 for TABLE in $(echo $TABLES | tr ',' ' '); do
   SRC_COUNT=$(mysql -u "$SOURCE_MYSQL_USER" -p"$SOURCE_MYSQL_PASSWORD" -h "$SOURCE_MYSQL_HOST" -D "$SOURCE_MYSQL_DATABASE" -e "SELECT COUNT(*) FROM $TABLE;" -s -N)
-  DEST_COUNT=$(mysql -u "$DEST_MYSQL_USER" -p"$DEST_MYSQL_PASSWORD" -h "$DEST_MYSQL_HOST" -D "$DEST_MYSQL_DATABASE" -e "SELECT COUNT(*) FROM $TABLE;" -s -N)
-  
+
+  # Start cloud_sql_proxy in the background
+  $CLOUD_SQL_PROXY_PATH -instances="$DEST_CLOUDSQL_INSTANCE"=tcp:3306 &
+
+  # Wait for the proxy to start
+  sleep 10
+
+  DEST_COUNT=$(mysql -u "$DEST_MYSQL_USER" -p"$DEST_MYSQL_PASSWORD" -h "127.0.0.1" -D "$DEST_MYSQL_DATABASE" -e "SELECT COUNT(*) FROM $TABLE;" -s -N)
+
+  # Stop cloud_sql_proxy
+  killall cloud_sql_proxy
+
   if [ "$SRC_COUNT" -ne "$DEST_COUNT" ]; then
     echo "Row count mismatch for table $TABLE: Source ($SRC_COUNT) vs Destination ($DEST_COUNT)"
   else
@@ -39,7 +48,17 @@ for TABLE in $(echo $TABLES | tr ',' ' '); do
   # Validate data mismatch
   echo "Validating data for table $TABLE..."
   SRC_DATA=$(mysql -u "$SOURCE_MYSQL_USER" -p"$SOURCE_MYSQL_PASSWORD" -h "$SOURCE_MYSQL_HOST" -D "$SOURCE_MYSQL_DATABASE" -e "SELECT * FROM $TABLE ORDER BY 1 LIMIT 1000;" | sort)
-  DEST_DATA=$(mysql -u "$DEST_MYSQL_USER" -p"$DEST_MYSQL_PASSWORD" -h "$DEST_MYSQL_HOST" -D "$DEST_MYSQL_DATABASE" -e "SELECT * FROM $TABLE ORDER BY 1 LIMIT 1000;" | sort)
+
+  # Start cloud_sql_proxy in the background
+  $CLOUD_SQL_PROXY_PATH -instances="$DEST_CLOUDSQL_INSTANCE"=tcp:3306 &
+
+  # Wait for the proxy to start
+  sleep 10
+
+  DEST_DATA=$(mysql -u "$DEST_MYSQL_USER" -p"$DEST_MYSQL_PASSWORD" -h "127.0.0.1" -D "$DEST_MYSQL_DATABASE" -e "SELECT * FROM $TABLE ORDER BY 1 LIMIT 1000;" | sort)
+
+  # Stop cloud_sql_proxy
+  killall cloud_sql_proxy
 
   DIFF=$(diff <(echo "$SRC_DATA") <(echo "$DEST_DATA"))
 
