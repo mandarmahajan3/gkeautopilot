@@ -1,0 +1,57 @@
+pipeline {
+    agent {
+        docker {
+            image 'google/cloud-sdk:latest'
+            args '-u root:root'
+        }
+    }
+    parameters {
+        string(name: 'SOURCE_MYSQL_USER', defaultValue: 'root', description: 'MySQL username for the source database')
+        string(name: 'SOURCE_MYSQL_PASSWORD', defaultValue: 'source_password', description: 'MySQL password for the source database')
+        string(name: 'SOURCE_MYSQL_HOST', defaultValue: 'source_mysql_host', description: 'MySQL host for the source database')
+        string(name: 'SOURCE_MYSQL_DATABASE', defaultValue: 'source_database', description: 'MySQL database name for the source database')
+        string(name: 'DEST_MYSQL_USER', defaultValue: 'root', description: 'MySQL username for the destination Cloud SQL database')
+        string(name: 'DEST_MYSQL_PASSWORD', defaultValue: 'dest_password', description: 'MySQL password for the destination Cloud SQL database')
+        string(name: 'DEST_MYSQL_HOST', defaultValue: 'cloudsql_instance_ip', description: 'Cloud SQL instance IP or connection name')
+        string(name: 'DEST_MYSQL_DATABASE', defaultValue: 'dest_database', description: 'MySQL database name for the destination Cloud SQL database')
+        string(name: 'TABLES', defaultValue: '', description: 'Comma-separated list of tables to validate (optional)')
+    }
+    stages {
+        stage('Setup') {
+            steps {
+                script {
+                    // Authenticate with Google Cloud
+                    withCredentials([file(credentialsId: 'gcloud-service-account', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                        sh 'gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}'
+                        sh 'gcloud config set project your-project-id'
+                    }
+                }
+            }
+        }
+        stage('Backup and Import') {
+            steps {
+                script {
+                    sh '''
+                    chmod +x backup_and_import.sh
+                    ./backup_and_import.sh ${MYSQL_USER} ${MYSQL_PASSWORD} ${MYSQL_HOST} ${MYSQL_DATABASE} ${GCS_BUCKET} ${CLOUDSQL_INSTANCE} ${CLOUDSQL_DATABASE} "${TABLES}"
+                    '''
+                }
+            }
+        }
+        stage('Data Validation') {
+            steps {
+                script {
+                    sh '''
+                    chmod +x data_validation.sh
+                    ./data_validation.sh ${SOURCE_MYSQL_USER} ${SOURCE_MYSQL_PASSWORD} ${SOURCE_MYSQL_HOST} ${SOURCE_MYSQL_DATABASE} ${DEST_MYSQL_USER} ${DEST_MYSQL_PASSWORD} ${DEST_MYSQL_HOST} ${DEST_MYSQL_DATABASE} "${TABLES}"
+                    '''
+                }
+            }
+        }
+    }
+    post {
+        always {
+            echo "Backup, import, and data validation process completed."
+        }
+    }
+}

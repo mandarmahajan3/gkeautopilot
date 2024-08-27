@@ -1,0 +1,46 @@
+pipeline {
+    agent {
+        docker {
+            image 'google/cloud-sdk:latest'
+            args '-u root:root'
+        }
+    }
+    parameters {
+        string(name: 'MYSQL_USER', defaultValue: 'root', description: 'MySQL username')
+        string(name: 'MYSQL_PASSWORD', defaultValue: 'your_password', description: 'MySQL password')
+        string(name: 'MYSQL_HOST', defaultValue: 'your_mysql_host', description: 'MySQL server host')
+        string(name: 'MYSQL_DATABASE', defaultValue: 'classicmodels', description: 'Name of the MySQL database to back up')
+        string(name: 'GCS_BUCKET', defaultValue: 'cirrus-migration', description: 'GCS bucket name where the dump will be uploaded')
+        string(name: 'CLOUDSQL_INSTANCE', defaultValue: 'mysql-cirrus', description: 'Cloud SQL instance name')
+        string(name: 'CLOUDSQL_DATABASE', defaultValue: 'classicmodels', description: 'Name of the Cloud SQL database to import into')
+        string(name: 'TABLES', defaultValue: '', description: 'Comma-separated list of tables to back up (optional)')
+    }
+    stages {
+        stage('Setup') {
+            steps {
+                script {
+                    // Authenticate with Google Cloud
+                    withCredentials([file(credentialsId: 'gcloud-service-account', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                        sh 'gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}'
+                        sh 'gcloud config set project your-project-id'
+                    }
+                }
+            }
+        }
+        stage('Backup and Import') {
+            steps {
+                script {
+                    sh '''
+                    chmod +x backup_and_import.sh
+                    ./backup_and_import.sh ${MYSQL_USER} ${MYSQL_PASSWORD} ${MYSQL_HOST} ${MYSQL_DATABASE} ${GCS_BUCKET} ${CLOUDSQL_INSTANCE} ${CLOUDSQL_DATABASE} "${TABLES}"
+                    '''
+                }
+            }
+        }
+    }
+    post {
+        always {
+            echo "Backup and import process completed."
+        }
+    }
+}
