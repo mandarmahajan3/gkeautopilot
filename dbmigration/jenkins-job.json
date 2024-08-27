@@ -13,6 +13,17 @@ pipeline {
         string(name: 'CLOUDSQL_DATABASE', defaultValue: 'classicmodels', description: 'Name of the Cloud SQL database to import into')
     }
     stages {
+        stage('Setup') {
+            steps {
+                script {
+                    // Authenticate with Google Cloud
+                    withCredentials([file(credentialsId: 'gcloud-service-account', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                        sh 'gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}'
+                        sh 'gcloud config set project your-project-id'
+                    }
+                }
+            }
+        }
         stage('Backup and Import') {
             steps {
                 script {
