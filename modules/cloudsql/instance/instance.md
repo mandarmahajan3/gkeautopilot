@@ -49,5 +49,3 @@ This document outlines the configuration for a Google Cloud SQL instance and its
 ## Summary
 
 This setup provides a robust Cloud SQL configuration with High Availability and Private Service Connect. The primary instance benefits from advanced features and enhanced security with PSC, while the read replica ensures data redundancy and load balancing.
-
-For further customization and details, refer to the [Terraform documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/sql_database_instance).
