@@ -31,7 +31,7 @@ This document outlines the configuration for setting up a Google Kubernetes Engi
 ### Settings
 
 - **`enable_autopilot`**: Enabled to utilize Google’s Autopilot mode, which automatically manages resources, security, and scaling for the cluster.
-- **`deletion_protection`**: Disabled, allowing the cluster to be deleted when no longer needed.
+- **`deletion_protection`**: Disabled, allowing the cluster to be deleted when no longer needed. Change this to enabled for production environments.
 - **`network`**: Specifies the VPC network to which the cluster is connected.
 - **`subnetwork`**: Defines the subnetwork within the VPC for the cluster.
 
