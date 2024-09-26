@@ -1,3 +1,41 @@
+# Create the database in the Cloud SQL instance
+resource "google_sql_database" "database" {
+  name     = var.database_name
+  instance = var.instance_name
+  project  = var.project_id
+}
+
+# Add database creation as a dependency to ensure it is created before setting permissions
+resource "null_resource" "setup_permissions" {
+  provisioner "local-exec" {
+    command = <<EOT
+    # Run Cloud SQL Proxy
+    ./cloud_sql_proxy -dir=/cloudsql -instances=${var.project_id}:${var.region}:${var.instance_name}=tcp:3306 &
+
+    # Wait for the proxy to start
+    sleep 10
+
+    # Grant permissions using mysql
+    mysql -u root -p"${random_password.master_user_password.result}" \
+    -h 127.0.0.1 -P 3306 -D "${var.database_name}" -e "
+    GRANT SELECT, INSERT, UPDATE, DELETE ON ${var.database_name}.* TO 'dml_user'@'%';
+    GRANT CREATE, ALTER, DROP ON ${var.database_name}.* TO 'ddl_user'@'%';
+    "
+
+    # Kill the Cloud SQL Proxy
+    pkill cloud_sql_proxy
+    EOT
+  }
+
+  depends_on = [
+    google_sql_user.master_user,
+    google_sql_user.dml_user,
+    google_sql_user.ddl_user,
+    google_sql_database.database  # Ensure the database is created before setting permissions
+  ]
+}
+
+
 # Data source to get the Cloud SQL instance information by name
 data "google_sql_database_instance" "instance" {
   name    = var.instance_name
@@ -60,34 +98,6 @@ resource "google_sql_user" "ddl_user" {
   instance = var.instance_name
   password = random_password.ddl_user_password.result
   host     = "%"
-}
-
-resource "null_resource" "setup_permissions" {
-  provisioner "local-exec" {
-    command = <<EOT
-    # Run Cloud SQL Proxy
-    ./cloud_sql_proxy -dir=/cloudsql -instances=${var.project_id}:${var.region}:${var.instance_name}=tcp:3306 &
-
-    # Wait for the proxy to start
-    sleep 10
-
-    # Grant permissions using mysql
-    mysql -u root -p"${random_password.master_user_password.result}" \
-    -h 127.0.0.1 -P 3306 -D "${var.database_name}" -e "
-    GRANT SELECT, INSERT, UPDATE, DELETE ON ${var.database_name}.* TO 'dml_user'@'%';
-    GRANT CREATE, ALTER, DROP ON ${var.database_name}.* TO 'ddl_user'@'%';
-    "
-
-    # Kill the Cloud SQL Proxy
-    pkill cloud_sql_proxy
-    EOT
-  }
-
-  depends_on = [
-    google_sql_user.master_user,
-    google_sql_user.dml_user,
-    google_sql_user.ddl_user
-  ]
 }
 
 
